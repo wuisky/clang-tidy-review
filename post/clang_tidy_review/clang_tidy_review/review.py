@@ -136,7 +136,7 @@ def main():
     # the compile_commands.json file are going to be correct
     if cmake_command:
         with message_group(f"Running cmake: {cmake_command}"):
-            subprocess.run(cmake_command, shell=True, check=True)
+            subprocess.run(cmake_command, shell=True, check=True, executable="/bin/bash")
 
     elif os.path.exists(build_compile_commands):
         fix_absolute_paths(build_compile_commands, args.base_dir)
