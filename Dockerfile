@@ -1,14 +1,14 @@
-FROM ubuntu:22.04
+FROM osrf/ros:noetic-desktop-full
 
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends\
     build-essential cmake git \
     tzdata \
+    clang-tidy \
+    clang-tidy-10 \
     clang-tidy-11 \
     clang-tidy-12 \
-    clang-tidy-13 \
-    clang-tidy-14 \
     python3 \
     python3-pip \
     && rm -rf /var/lib/apt/lists/
