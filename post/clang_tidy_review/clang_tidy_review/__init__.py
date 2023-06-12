@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 # See LICENSE for more information
 
+import chardet
 import fnmatch
 import itertools
 import json
@@ -376,6 +377,13 @@ def find_line_number_from_offset(offset_lookup, filename, offset):
 def read_one_line(filename, line_offset):
     """Read a single line from a source file"""
     # Could cache the files instead of opening them each time?
+
+    print(f'read_one_line {filename}')
+    with open(filename, 'rb') as f:
+        c = f.read()
+        result = chardet.detect(c)
+        print(f'result:  {result}')
+
     with open(filename, "r") as file:
         file.seek(line_offset)
         return file.readline().rstrip("\n")
