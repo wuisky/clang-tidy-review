@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: MIT
 # See LICENSE for more information
 
-import chardet
 import fnmatch
 import itertools
 import json
@@ -379,12 +378,7 @@ def read_one_line(filename, line_offset):
     # Could cache the files instead of opening them each time?
 
     print(f'read_one_line {filename}, offset {line_offset}')
-    # with open(filename, 'rb') as f:
-    #     c = f.read()
-    #     result = chardet.detect(c)
-    #     print(f'result:  {result}')
-
-    with open(filename, "r", encoding="utf-8") as file:
+    with open(filename, "r") as file:
         file.seek(line_offset)
         return file.readline().rstrip('\n')
 
