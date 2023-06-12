@@ -378,15 +378,15 @@ def read_one_line(filename, line_offset):
     """Read a single line from a source file"""
     # Could cache the files instead of opening them each time?
 
-    print(f'read_one_line {filename}')
-    with open(filename, 'rb') as f:
-        c = f.read()
-        result = chardet.detect(c)
-        print(f'result:  {result}')
+    print(f'read_one_line {filename}, offset {line_offset}')
+    # with open(filename, 'rb') as f:
+    #     c = f.read()
+    #     result = chardet.detect(c)
+    #     print(f'result:  {result}')
 
     with open(filename, "r", encoding="utf-8") as file:
         file.seek(line_offset)
-        return file.readline().rstrip("\n")
+        return file.readline().rstrip('\n')
 
 
 def collate_replacement_sets(diagnostic, offset_lookup):
