@@ -762,25 +762,21 @@ def create_review(
         print("No files to check!")
         return None
 
-    basedir = pathlib.Path(base_dir).resolve()
-    newbasedir = pathlib.Path(".").resolve()
-
-    print(f'basedir= {basedir}')
-    print(f'newbasedir= {newbasedir}')
-
-
-    # add base_dir as prefix
-    for i in range(len(files)):
-        files[i] = base_dir + files[i]
-
     print(f"Checking these files: {files}", flush=True)
 
-    line_ranges = get_line_ranges(diff, files)
+    basedir = pathlib.Path(base_dir).resolve()
+    line_ranges = get_line_ranges(diff, files, basedir)
     if line_ranges == "[]":
         print("No lines added in this PR!")
         return None
 
     print(f"Line filter for clang-tidy:\n{line_ranges}\n")
+
+    # add base_dir as prefix
+    print(f'basedir= {basedir}')
+    for i in range(len(files)):
+        files[i] = basedir + '/' +  files[i]
+    print(f"Checking these files with basedir prefix: {files}", flush=True)
 
     # Run clang-tidy with the configured parameters and produce the CLANG_TIDY_FIXES file
     build_clang_tidy_warnings(
@@ -882,7 +878,7 @@ def load_review() -> Optional[PRReview]:
         return payload or None
 
 
-def get_line_ranges(diff, files):
+def get_line_ranges(diff, files, basedir):
     """Return the line ranges of added lines in diff, suitable for the
     line-filter argument of clang-tidy
 
@@ -908,7 +904,7 @@ def get_line_ranges(diff, files):
 
     line_filter_json = []
     for name, lines in lines_by_file.items():
-        line_filter_json.append(str({"name": name, "lines": lines}))
+        line_filter_json.append(str({"name": basedir + '/'+ name, "lines": lines}))
     return json.dumps(line_filter_json, separators=(",", ":"))
 
 
