@@ -151,6 +151,7 @@ def main():
         args.config_file,
         include,
         exclude,
+        args.base_dir
     )
 
     with message_group("Saving metadata"):

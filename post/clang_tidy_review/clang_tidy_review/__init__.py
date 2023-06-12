@@ -562,6 +562,9 @@ def fix_absolute_paths(build_compile_commands, base_dir):
     basedir = pathlib.Path(base_dir).resolve()
     newbasedir = pathlib.Path(".").resolve()
 
+    print(f'basedir= {basedir}')
+    print(f'newbasedir= {newbasedir}')
+
     if basedir == newbasedir:
         return
 
@@ -743,6 +746,7 @@ def create_review(
     config_file: str,
     include: List[str],
     exclude: List[str],
+    base_dir: str,
 ) -> Optional[PRReview]:
     """Given the parameters, runs clang-tidy and creates a review.
     If no files were changed, or no warnings could be found, None will be returned.
@@ -757,6 +761,10 @@ def create_review(
     if files == []:
         print("No files to check!")
         return None
+
+    # add base_dir as prefix
+    for f in files:
+        f = base_dir + f
 
     print(f"Checking these files: {files}", flush=True)
 
