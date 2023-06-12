@@ -762,9 +762,16 @@ def create_review(
         print("No files to check!")
         return None
 
+    basedir = pathlib.Path(base_dir).resolve()
+    newbasedir = pathlib.Path(".").resolve()
+
+    print(f'basedir= {basedir}')
+    print(f'newbasedir= {newbasedir}')
+
+
     # add base_dir as prefix
-    for f in files:
-        f = base_dir + f
+    for i in range(len(files)):
+        files[i] = base_dir + files[i]
 
     print(f"Checking these files: {files}", flush=True)
 
