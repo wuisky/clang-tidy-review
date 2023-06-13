@@ -695,10 +695,6 @@ def create_review_file(
             diagnostic_message["FileOffset"],
         )
 
-        print(f'rel_path {rel_path}')
-        print(f'diff_lookup {diff_lookup}')
-        print(f'end_line {end_line}')
-
         # if rel_path not in diff_lookup or end_line not in diff_lookup[rel_path]:
         #     print(
         #         f"WARNING: Skipping comment for file '{rel_path}' not in PR changeset. Comment body is:\n{comment_body}"
@@ -799,9 +795,6 @@ def create_review(
 
     diff_lookup = make_file_line_lookup(diff)
     offset_lookup = make_file_offset_lookup(files)
-
-    print(f'diff_lookup {diff_lookup}')
-    print(f'offset_lookup {offset_lookup}')
 
     with message_group("Creating review from warnings"):
         review = create_review_file(
