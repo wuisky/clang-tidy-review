@@ -377,7 +377,6 @@ def read_one_line(filename, line_offset):
     """Read a single line from a source file"""
     # Could cache the files instead of opening them each time?
 
-    print(f'read_one_line {filename}, offset {line_offset}')
     with open(filename, "r",  encoding='utf-8', errors='replace') as file:
         file.seek(line_offset)
         return file.readline().rstrip('\n')
