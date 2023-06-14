@@ -166,7 +166,7 @@ def main():
     else:
         lgtm_comment_body = strip_enclosing_quotes(args.lgtm_comment_body)
         post_review(
-            pull_request, review, args.max_comments, lgtm_comment_body, args.dry_run
+            pull_request, review, args.max_comments, lgtm_comment_body, args.dry_run, args.base_dir
         )
 
 

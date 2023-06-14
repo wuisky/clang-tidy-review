@@ -968,7 +968,11 @@ def post_review(
     max_comments: int,
     lgtm_comment_body: str,
     dry_run: bool,
+    base_dir: str,
 ) -> int:
+    for comment in review['comments']:
+        comment['path'] = comment['path'].lstrip(base_dir + '/')
+
     print(
         "Created the following review:\n", pprint.pformat(review, width=130), flush=True
     )
