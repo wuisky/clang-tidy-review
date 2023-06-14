@@ -970,8 +970,9 @@ def post_review(
     dry_run: bool,
     base_dir: str,
 ) -> int:
+    # trim base_dir
     for comment in review['comments']:
-        comment['path'] = comment['path'].lstrip(base_dir + '/')
+        comment['path'] = comment['path'].replace(base_dir + '/', '')
 
     print(
         "Created the following review:\n", pprint.pformat(review, width=130), flush=True
