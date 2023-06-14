@@ -970,10 +970,6 @@ def post_review(
     dry_run: bool,
     base_dir: str,
 ) -> int:
-    # trim base_dir
-    for comment in review['comments']:
-        comment['path'] = comment['path'].replace(base_dir + '/', '')
-
     print(
         "Created the following review:\n", pprint.pformat(review, width=130), flush=True
     )
@@ -983,6 +979,15 @@ def post_review(
         if not dry_run:
             pull_request.post_lgtm_comment(lgtm_comment_body)
         return 0
+
+    # trim base_dir
+    for comment in review['comments']:
+        comment['path'] = comment['path'].replace(base_dir + '/', '')
+    print(
+        "Created the following review after trim base_dir:\n",
+        pprint.pformat(review, width=130), flush=True
+    )
+
 
     total_comments = len(review["comments"])
 
