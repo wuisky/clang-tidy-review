@@ -136,7 +136,7 @@ def main():
     # the compile_commands.json file are going to be correct
     if cmake_command:
         with message_group(f"Running cmake: {cmake_command}"):
-            subprocess.run(cmake_command, shell=True, check=True)
+            subprocess.run(cmake_command, shell=True, check=True, executable="/bin/bash")
 
     elif os.path.exists(build_compile_commands):
         fix_absolute_paths(build_compile_commands, args.base_dir)
@@ -151,6 +151,7 @@ def main():
         args.config_file,
         include,
         exclude,
+        args.base_dir
     )
 
     with message_group("Saving metadata"):
@@ -165,7 +166,7 @@ def main():
     else:
         lgtm_comment_body = strip_enclosing_quotes(args.lgtm_comment_body)
         post_review(
-            pull_request, review, args.max_comments, lgtm_comment_body, args.dry_run
+            pull_request, review, args.max_comments, lgtm_comment_body, args.dry_run, args.base_dir
         )
 
 

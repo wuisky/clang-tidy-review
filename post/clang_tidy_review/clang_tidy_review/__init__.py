@@ -376,9 +376,10 @@ def find_line_number_from_offset(offset_lookup, filename, offset):
 def read_one_line(filename, line_offset):
     """Read a single line from a source file"""
     # Could cache the files instead of opening them each time?
-    with open(filename, "r") as file:
+
+    with open(filename, "r",  encoding='utf-8', errors='replace') as file:
         file.seek(line_offset)
-        return file.readline().rstrip("\n")
+        return file.readline().rstrip('\n')
 
 
 def collate_replacement_sets(diagnostic, offset_lookup):
@@ -562,6 +563,9 @@ def fix_absolute_paths(build_compile_commands, base_dir):
     basedir = pathlib.Path(base_dir).resolve()
     newbasedir = pathlib.Path(".").resolve()
 
+    print(f'basedir= {basedir}')
+    print(f'newbasedir= {newbasedir}')
+
     if basedir == newbasedir:
         return
 
@@ -691,11 +695,11 @@ def create_review_file(
             diagnostic_message["FileOffset"],
         )
 
-        if rel_path not in diff_lookup or end_line not in diff_lookup[rel_path]:
-            print(
-                f"WARNING: Skipping comment for file '{rel_path}' not in PR changeset. Comment body is:\n{comment_body}"
-            )
-            continue
+        # if rel_path not in diff_lookup or end_line not in diff_lookup[rel_path]:
+        #     print(
+        #         f"WARNING: Skipping comment for file '{rel_path}' not in PR changeset. Comment body is:\n{comment_body}"
+        #     )
+        #     continue
 
         comments.append(
             {
@@ -743,6 +747,7 @@ def create_review(
     config_file: str,
     include: List[str],
     exclude: List[str],
+    base_dir: str,
 ) -> Optional[PRReview]:
     """Given the parameters, runs clang-tidy and creates a review.
     If no files were changed, or no warnings could be found, None will be returned.
@@ -760,12 +765,18 @@ def create_review(
 
     print(f"Checking these files: {files}", flush=True)
 
-    line_ranges = get_line_ranges(diff, files)
+    print(f'base_dir= {base_dir}')
+    line_ranges = get_line_ranges(diff, files, base_dir)
     if line_ranges == "[]":
         print("No lines added in this PR!")
         return None
 
     print(f"Line filter for clang-tidy:\n{line_ranges}\n")
+
+    # add base_dir as prefix
+    for i in range(len(files)):
+        files[i] = base_dir + '/' +  files[i]
+    print(f"Checking these files with basedir prefix: {files}", flush=True)
 
     # Run clang-tidy with the configured parameters and produce the CLANG_TIDY_FIXES file
     build_clang_tidy_warnings(
@@ -867,7 +878,7 @@ def load_review() -> Optional[PRReview]:
         return payload or None
 
 
-def get_line_ranges(diff, files):
+def get_line_ranges(diff, files, base_dir):
     """Return the line ranges of added lines in diff, suitable for the
     line-filter argument of clang-tidy
 
@@ -893,7 +904,7 @@ def get_line_ranges(diff, files):
 
     line_filter_json = []
     for name, lines in lines_by_file.items():
-        line_filter_json.append(str({"name": name, "lines": lines}))
+        line_filter_json.append(str({"name": base_dir + '/'+ name, "lines": lines}))
     return json.dumps(line_filter_json, separators=(",", ":"))
 
 
@@ -957,6 +968,7 @@ def post_review(
     max_comments: int,
     lgtm_comment_body: str,
     dry_run: bool,
+    base_dir: str,
 ) -> int:
     print(
         "Created the following review:\n", pprint.pformat(review, width=130), flush=True
@@ -967,6 +979,15 @@ def post_review(
         if not dry_run:
             pull_request.post_lgtm_comment(lgtm_comment_body)
         return 0
+
+    # trim base_dir
+    for comment in review['comments']:
+        comment['path'] = comment['path'].replace(base_dir + '/', '')
+    print(
+        "Created the following review after trim base_dir:\n",
+        pprint.pformat(review, width=130), flush=True
+    )
+
 
     total_comments = len(review["comments"])
 
